@@ -27,7 +27,7 @@ const mount = (vNode,container) => {
     const props = vNode.props
     for(const key in props){
         if(key.startsWith('on')){
-             el.addEventListener(key.splice(2), props[key])
+             el.addEventListener(key.splice(2).toLowerCase(), props[key])
         }else{
             el.setAttribute(key,props[key])
         }
@@ -47,4 +47,52 @@ const mount = (vNode,container) => {
   
     // 将生产的元素渲染到节点
     container.appendChild(el)
+}
+
+
+/**
+ * 
+ * @param {*} node1 旧节点
+ * @param {*} node2 新节点
+ */
+const patch = (node1,node2) => {
+    //获取旧的dom并赋值到新的vNode属性上
+   const el = node2.el =  node1.el
+
+   // 处理tag
+   //实际上的源码 vNode上的tag不同或者key不同都会删除旧的dom重新添加新的dom
+   if(node1.tag !== node2.tag){
+     const parentElement = el.parentElement
+     parentElement.removeChild(el)
+     mount(node2,parentElement)
+   }else{
+       //处理 props
+       const newProps = node2.props
+       const oldProps = node1.props
+
+       //将新的props挂载到el上
+        for (const key in newProps) {
+            const oldValue = oldProps[key]
+            const newValue = newProps[key]
+            if(oldValue !== newValue){
+                if(key.startsWith('on')){
+                    el.addEventListener(key.splice(2).toLowerCase(), newValue)
+                }else{
+                    el.setAttribute(key,newValue)
+                }
+               
+            }
+        }
+
+        //将旧的props删除
+        for (const key in oldProps) {
+            if(!(key in newProps)){
+               if(key.startsWith('on')){
+                  el.removeEventListener(key,oldProps[key])
+               }else{
+                   el.removeAttribute(key)
+               }
+            }
+        }
+   }
 }
