@@ -27,9 +27,17 @@
         /***
          *  新旧vNode替换patch 通过diff算法
          */
-        const vNode2 = h('div', { class:'han', id: 2, index: 2}, '我是新节点')
+        // const vNode2 = h('div', { class:'han', id: 2, index: 2}, '我是新节点')
+        const vnode2 = h('div', {class:'han', id: 1,}, [
+            h('div', {id:'first'}, '第三个子元素'),
+            h('div', {id:'first'}, '第三个子元素'),
+            h('div', {id:'first'}, '第三个子元素'),
+        ])
 
-        patch(vnode,vNode2)
+        setTimeout(() => {
+            patch(vnode,vnode2)
+        }, 3000);
+        
         
     </script>
 </body>

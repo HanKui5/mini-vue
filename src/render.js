@@ -67,8 +67,8 @@ const patch = (node1,node2) => {
      mount(node2,parentElement)
    }else{
        //处理 props
-       const newProps = node2.props
-       const oldProps = node1.props
+       const newProps = node2.props || {}
+       const oldProps = node1.props || {}
 
        //将新的props挂载到el上
         for (const key in newProps) {
@@ -88,10 +88,50 @@ const patch = (node1,node2) => {
         for (const key in oldProps) {
             if(!(key in newProps)){
                if(key.startsWith('on')){
-                  el.removeEventListener(key,oldProps[key])
+                  el.removeEventListener(key.splice(2).toLowerCase(),oldProps[key])
                }else{
                    el.removeAttribute(key)
                }
+            }
+        }
+
+        //处理children
+        const newChildren = node2.children || []
+        const oldChildren = node1.children || []
+
+        // 新vNode的children为字符串
+        if(typeof newChildren === 'string'){
+            if(typeof oldChildren === 'string'){
+                el.textContent = newChildren
+            }else{
+                el.innerHTML = newChildren
+            }
+        }else{
+            //新vNode的children为数组
+            if(typeof oldChildren === 'string'){
+                el.innerHTML = ''
+                newChildren.forEach(item => {
+                    mount(item,el)
+                })
+            }else{
+                //oldChildren [a, b, c]
+                //newChildren [a, b, c,d]
+                const commonLength = Math.min(newChildren.length,oldChildren.length)
+                for (let index = 0; index < commonLength; index++) {
+                    patch(oldChildren[index], newChildren[index])
+                }
+                //newChildren长度 > oldChildren长度
+                if(newChildren.length > oldChildren.length){
+                    newChildren.splice(commonLength).forEach(item => {
+                        mount(item,el)
+                    })
+                }
+                 //newChildren长度 < oldChildren长度
+                if(newChildren.length < oldChildren.length){
+                    oldChildren.splice(commonLength).forEach(item => {
+                        el.removeChild(item.el)
+                    })
+                }
             }
         }
    }
