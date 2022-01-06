@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script src="./src/render.js"></script>
+    <script src="./src/reactive.js"></script>
+    <script>
+
+        /**
+         * 生成vNode
+         */
+        const vnode = h('div', {class:'han', id: 1,}, [
+            h('div', {id:'first'}, '第一个子元素'),
+            h('div', null, '第二子元素')
+        ])
+
+        /**
+         * vNode =》真实Node
+         */
+        mount(vnode,document.querySelector('#app'))
+
+        /***
+         *  新旧vNode替换patch 通过diff算法
+         */
+        // const vNode2 = h('div', { class:'han', id: 2, index: 2}, '我是新节点')
+        const vnode2 = h('div', {class:'han', id: 1,}, [
+            h('div', {id:'first'}, '第三个子元素'),
+            h('div', {id:'first'}, '第三个子元素'),
+            h('div', {id:'first'}, '第三个子元素'),
+        ])
+
+        setTimeout(() => {
+            patch(vnode,vnode2)
+        }, 3000);
+        
+        
+    </script>
+</body>
+</html>

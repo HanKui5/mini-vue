@@ -27,7 +27,7 @@ const mount = (vNode,container) => {
     const props = vNode.props
     for(const key in props){
         if(key.startsWith('on')){
-             el.addEventListener(key.splice(2).toLowerCase(), props[key])
+             el.addEventListener(key.slice(2).toLowerCase(), props[key])
         }else{
             el.setAttribute(key,props[key])
         }
@@ -56,7 +56,7 @@ const mount = (vNode,container) => {
  * @param {*} node2 新节点
  */
 const patch = (node1,node2) => {
-    //获取旧的dom并赋值到新的vNode属性上
+    //获取旧的dom并赋值到新的vNode属性上   
    const el = node2.el =  node1.el
 
    // 处理tag
@@ -76,7 +76,7 @@ const patch = (node1,node2) => {
             const newValue = newProps[key]
             if(oldValue !== newValue){
                 if(key.startsWith('on')){
-                    el.addEventListener(key.splice(2).toLowerCase(), newValue)
+                    el.addEventListener(key.slice(2).toLowerCase(), newValue)
                 }else{
                     el.setAttribute(key,newValue)
                 }
@@ -86,13 +86,14 @@ const patch = (node1,node2) => {
 
         //将旧的props删除
         for (const key in oldProps) {
-            if(!(key in newProps)){
-               if(key.startsWith('on')){
-                  el.removeEventListener(key.splice(2).toLowerCase(),oldProps[key])
-               }else{
-                   el.removeAttribute(key)
-               }
-            }
+            if(key.startsWith('on')){
+                el.removeEventListener(key.slice(2).toLowerCase(),oldProps[key])
+             }else{
+                if(!(key in newProps)){
+                    el.removeAttribute(key)
+                }
+             }
+            
         }
 
         //处理children
@@ -100,8 +101,8 @@ const patch = (node1,node2) => {
         const oldChildren = node1.children || []
 
         // 新vNode的children为字符串
-        if(typeof newChildren === 'string'){
-            if(typeof oldChildren === 'string'){
+        if(typeof newChildren === 'string' ){
+            if(typeof oldChildren === 'string' ){
                 el.textContent = newChildren
             }else{
                 el.innerHTML = newChildren
@@ -122,13 +123,13 @@ const patch = (node1,node2) => {
                 }
                 //newChildren长度 > oldChildren长度
                 if(newChildren.length > oldChildren.length){
-                    newChildren.splice(commonLength).forEach(item => {
+                    newChildren.slice(commonLength).forEach(item => {
                         mount(item,el)
                     })
                 }
                  //newChildren长度 < oldChildren长度
                 if(newChildren.length < oldChildren.length){
-                    oldChildren.splice(commonLength).forEach(item => {
+                    oldChildren.slice(commonLength).forEach(item => {
                         el.removeChild(item.el)
                     })
                 }

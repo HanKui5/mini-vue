@@ -10,35 +10,23 @@
     <div id="app"></div>
     <script src="./src/render.js"></script>
     <script src="./src/reactive.js"></script>
+    <script src="./src/index.js"></script>
     <script>
 
-        /**
-         * 生成vNode
-         */
-        const vnode = h('div', {class:'han', id: 1,}, [
-            h('div', {id:'first'}, '第一个子元素'),
-            h('div', null, '第二子元素')
-        ])
+        const App = {
+            data: reactive({
+                count: 1
+            }),
+            render(){
+                return h('div', { id:'container' },[
+                    h('h3', { id:'number' }, `当前计数${this.data.count}`),
+                    h('button',{onclick:() => { this.data.count ++ }}, '+1按钮')
+                ])
+            }
+        }
 
-        /**
-         * vNode =》真实Node
-         */
-        mount(vnode,document.querySelector('#app'))
-
-        /***
-         *  新旧vNode替换patch 通过diff算法
-         */
-        // const vNode2 = h('div', { class:'han', id: 2, index: 2}, '我是新节点')
-        const vnode2 = h('div', {class:'han', id: 1,}, [
-            h('div', {id:'first'}, '第三个子元素'),
-            h('div', {id:'first'}, '第三个子元素'),
-            h('div', {id:'first'}, '第三个子元素'),
-        ])
-
-        setTimeout(() => {
-            patch(vnode,vnode2)
-        }, 3000);
-        
+        const app = createApp(App)
+        app.mount('#app')
         
     </script>
 </body>
